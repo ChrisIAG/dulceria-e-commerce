@@ -17,7 +17,6 @@ async function main() {
       name: 'Administrador',
       password: hashedPassword,
       role: 'ADMIN',
-      clientType: 'RETAIL',
     },
   });
 
@@ -72,9 +71,9 @@ async function main() {
       name: 'Mazapán',
       slug: 'mazapan',
       description: 'Delicioso dulce de cacahuate tradicional mexicano',
-      price: 5.0,
-      wholesalePrice: 3.5,
-      minWholesale: 50,
+      priceRetail: 5.0,
+      priceWholesale: 3.5,
+      wholesaleMinQty: 50,
       stock: 500,
       categoryId: dulcesCategory?.id,
       images: ['/products/mazapan.jpg'],
@@ -85,9 +84,9 @@ async function main() {
       name: 'Tamarindo',
       slug: 'tamarindo',
       description: 'Dulce de tamarindo con chile',
-      price: 3.0,
-      wholesalePrice: 2.0,
-      minWholesale: 100,
+      priceRetail: 3.0,
+      priceWholesale: 2.0,
+      wholesaleMinQty: 100,
       stock: 800,
       categoryId: dulcesCategory?.id,
       images: ['/products/tamarindo.jpg'],
@@ -98,9 +97,9 @@ async function main() {
       name: 'Rockaleta',
       slug: 'rockaleta',
       description: 'Paleta de caramelo con relleno ácido',
-      price: 4.0,
-      wholesalePrice: 2.5,
-      minWholesale: 100,
+      priceRetail: 4.0,
+      priceWholesale: 2.5,
+      wholesaleMinQty: 100,
       stock: 600,
       categoryId: dulcesCategory?.id,
       images: ['/products/rockaleta.jpg'],
@@ -111,9 +110,9 @@ async function main() {
       name: 'Carlos V',
       slug: 'carlos-v',
       description: 'Chocolate con leche clásico',
-      price: 12.0,
-      wholesalePrice: 9.0,
-      minWholesale: 24,
+      priceRetail: 12.0,
+      priceWholesale: 9.0,
+      wholesaleMinQty: 24,
       stock: 300,
       categoryId: chocolatesCategory?.id,
       images: ['/products/carlos-v.jpg'],
@@ -124,9 +123,9 @@ async function main() {
       name: 'Kinder Bueno',
       slug: 'kinder-bueno',
       description: 'Chocolate relleno de avellana',
-      price: 18.0,
-      wholesalePrice: 14.0,
-      minWholesale: 24,
+      priceRetail: 18.0,
+      priceWholesale: 14.0,
+      wholesaleMinQty: 24,
       stock: 200,
       categoryId: chocolatesCategory?.id,
       images: ['/products/kinder-bueno.jpg'],
@@ -139,14 +138,14 @@ async function main() {
     await prisma.product.upsert({
       where: { slug: product.slug },
       update: {},
-      create: product,
+      create: product as any,
     });
   }
 
   console.log('✅ Productos de ejemplo creados');
 
   // Crear promoción de ejemplo
-  const promo = await prisma.promotion.create({
+  const promo = await (prisma as any).promotion.create({
     data: {
       title: 'Descuento de Bienvenida',
       description: '10% de descuento en productos seleccionados',

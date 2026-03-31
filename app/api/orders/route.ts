@@ -70,7 +70,7 @@ export async function POST(request: Request) {
     // Calcular total
     let subtotal = 0;
     const orderItems = validated.items.map((item) => {
-      const product = products.find((p) => p.id === item.productId);
+      const product = products.find((p: any) => p.id === item.productId);
       if (!product) {
         throw new Error(`Producto ${item.productId} no encontrado`);
       }
@@ -100,7 +100,7 @@ export async function POST(request: Request) {
         subtotal,
         total: subtotal,
         items: {
-          create: orderItems,
+          create: orderItems as any,
         },
       },
       include: {
