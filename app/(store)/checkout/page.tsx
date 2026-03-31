@@ -32,6 +32,8 @@ export default function CheckoutPage() {
     setLoading(true);
 
     try {
+      console.log('[Checkout] Sending request to create Stripe session...');
+      
       const response = await fetch('/api/stripe/create-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -53,17 +55,28 @@ export default function CheckoutPage() {
         }),
       });
 
+      console.log('[Checkout] Response status:', response.status);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('[Checkout] Error response:', errorData);
+        throw new Error(errorData.message || errorData.error || `Error ${response.status}`);
+      }
+
       const data = await response.json();
+      console.log('[Checkout] Session created:', data);
 
       if (data.url) {
+        console.log('[Checkout] Redirecting to Stripe...');
         clearCart();
         window.location.href = data.url;
       } else {
-        throw new Error(data.error || 'Error al crear sesión de pago');
+        throw new Error('No se recibió URL de pago de Stripe');
       }
     } catch (error) {
-      console.error('Error:', error);
-      alert('Error al procesar el pago. Intenta de nuevo.');
+      console.error('[Checkout] Error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      alert(`Error al procesar el pago:\n${errorMessage}\n\nPor favor, verifica la consola del servidor para más detalles.`);
     } finally {
       setLoading(false);
     }
