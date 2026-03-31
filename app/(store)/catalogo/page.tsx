@@ -5,13 +5,15 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { formatPrice } from '@/lib/utils';
 
-export const dynamic = 'force-dynamic'; // Evita pre-render durante build
+// Revalidar cada 60 segundos (ISR)
+export const revalidate = 60;
 
 export default async function CatalogoPage() {
   const products = await prisma.product.findMany({
     where: { active: true },
     include: { category: true },
     orderBy: { createdAt: 'desc' },
+    take: 50, // Limitar a 50 productos inicialmente
   });
 
   const categories = await prisma.category.findMany({

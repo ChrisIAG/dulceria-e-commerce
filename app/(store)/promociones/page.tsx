@@ -8,6 +8,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { formatPrice } from '@/lib/utils';
 
+// Revalidar cada 30 segundos (ISR)
+export const revalidate = 30;
+
 export default async function PromocionesPage() {
   const now = new Date();
 
@@ -27,11 +30,13 @@ export default async function PromocionesPage() {
           images: true,
           price: true,
         },
+        take: 10, // Limitar productos por promoción
       },
     },
     orderBy: {
       startDate: 'desc',
     },
+    take: 20, // Máximo 20 promociones
   });
 
   // Promociones con banner para el carrusel

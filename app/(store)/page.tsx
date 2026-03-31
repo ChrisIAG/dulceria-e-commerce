@@ -5,6 +5,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ArrowRight, Truck, ShieldCheck, Tag } from 'lucide-react';
 import { PromoBanner } from '@/components/store/promo-banner';
 
+// Revalidar cada 60 segundos (ISR)
+export const revalidate = 60;
+
 export default async function HomePage() {
   // Obtener promociones activas con banner
   const now = new Date();

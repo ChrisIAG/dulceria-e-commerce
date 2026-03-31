@@ -6,7 +6,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { formatPrice } from '@/lib/utils';
 import AddToCartButton from '@/components/store/add-to-cart-button';
 
-export const dynamic = 'force-dynamic'; // Evita pre-render durante build
+// Revalidar cada 60 segundos (ISR)
+export const revalidate = 60;
 
 interface ProductPageProps {
   params: {
