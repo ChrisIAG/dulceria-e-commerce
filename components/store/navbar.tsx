@@ -2,12 +2,14 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ShoppingCart, User, Menu, Search, X } from 'lucide-react';
+import { ShoppingCart, User, Menu, X, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { useCartStore } from '@/store/cart';
 import { CartDrawer } from './cart-drawer';
+import { SearchBar } from './search-bar';
 import { useHydration } from '@/hooks/use-hydration';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export function Navbar() {
   const hydrated = useHydration();
@@ -23,34 +25,46 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        {/* Logo */}
-        <Link href="/" className="flex items-center space-x-2">
-          <span className="text-2xl font-bold text-primary">🍬 DulceríaOnline</span>
-        </Link>
+      <div className="container mx-auto px-4">
+        <div className="flex h-16 items-center justify-between gap-4">
+          {/* Logo */}
+          <Link href="/" className="flex items-center space-x-2 flex-shrink-0">
+            <span className="text-2xl font-bold text-primary">🍬 DulceríaOnline</span>
+          </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
-          {menuItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="transition-colors hover:text-primary"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex items-center space-x-6 text-sm font-medium">
+            {menuItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="transition-colors hover:text-primary whitespace-nowrap"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
 
-        {/* Right Actions */}
-        <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="icon" className="hidden md:flex">
-            <Search className="h-5 w-5" />
-          </Button>
+          {/* Search Bar - Desktop */}
+          <div className="hidden md:block flex-1 max-w-md mx-4">
+            <SearchBar />
+          </div>
+
+          {/* Right Actions */}
+          <div className="flex items-center space-x-2 flex-shrink-0">
+          {/* Theme Toggle */}
+          <ThemeToggle />
 
           <Link href="/mi-cuenta">
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" aria-label="Mi cuenta">
               <User className="h-5 w-5" />
+            </Button>
+          </Link>
+
+          {/* Wishlist */}
+          <Link href="/favoritos">
+            <Button variant="ghost" size="icon" aria-label="Mis favoritos">
+              <Heart className="h-5 w-5" />
             </Button>
           </Link>
 
@@ -65,6 +79,7 @@ export function Navbar() {
               )}
             </Button>
           </CartDrawer>
+          </div>
 
           {/* Mobile Menu Button */}
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
@@ -97,12 +112,18 @@ export function Navbar() {
                     <User className="h-5 w-5" />
                     Mi Cuenta
                   </Link>
-                  <button
-                    className="flex items-center gap-2 text-lg font-medium transition-colors hover:text-primary py-2 w-full text-left"
+                  <Link
+                    href="/favoritos"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-2 text-lg font-medium transition-colors hover:text-primary py-2"
                   >
-                    <Search className="h-5 w-5" />
-                    Buscar
-                  </button>
+                    <Heart className="h-5 w-5" />
+                    Favoritos
+                  </Link>
+                  <div className="flex items-center gap-2 py-2">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Tema:</span>
+                    <ThemeToggle />
+                  </div>
                 </div>
               </nav>
             </SheetContent>

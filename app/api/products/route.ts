@@ -17,29 +17,109 @@ const productSchema = z.object({
   categoryId: z.string().optional(),
 });
 
-// GET /api/products - Lista todos los productos
+// GET /api/products - Lista todos los productos con filtros avanzados y paginación
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
+  
+  // Parámetros básicos
   const categoryId = searchParams.get('categoryId');
   const active = searchParams.get('active');
   const featured = searchParams.get('featured');
+  
+  // Paginación
+  const page = parseInt(searchParams.get('page') || '1');
+  const limit = parseInt(searchParams.get('limit') || '24');
+  const skip = (page - 1) * limit;
+  
+  // Filtros avanzados
+  const categories = searchParams.get('categories')?.split(',').filter(Boolean) || [];
+  const priceMin = searchParams.get('priceMin');
+  const priceMax = searchParams.get('priceMax');
+  const inStockOnly = searchParams.get('inStockOnly') === 'true';
+  const clientType = searchParams.get('clientType'); // 'RETAIL' | 'WHOLESALE' | 'ALL'
+  const sortBy = searchParams.get('sortBy') || 'newest'; // 'newest' | 'price-asc' | 'price-desc' | 'name'
 
   try {
+    // Construir condiciones de filtrado
+    const where: any = {
+      ...(active !== null && { active: active === 'true' }),
+      ...(featured !== null && { featured: featured === 'true' }),
+    };
+
+    // Filtro por categorías múltiples
+    if (categoryId) {
+      where.categoryId = categoryId;
+    } else if (categories.length > 0) {
+      where.categoryId = { in: categories };
+    }
+
+    // Filtro por rango de precio (usando precio de menudeo como referencia)
+    if (priceMin || priceMax) {
+      where.price = {};
+      if (priceMin) where.price.gte = parseFloat(priceMin);
+      if (priceMax) where.price.lte = parseFloat(priceMax);
+    }
+
+    // Filtro por disponibilidad en stock
+    if (inStockOnly) {
+      where.stock = { gt: 0 };
+    }
+
+    // Filtro por tipo de cliente (mayoreo disponible)
+    // No aplicamos filtro específico aquí, se manejará en el frontend
+    // pero podríamos filtrar productos que tengan minWholesale bajo
+
+    // Construir ordenamiento
+    let orderBy: any = { createdAt: 'desc' }; // default
+    switch (sortBy) {
+      case 'price-asc':
+        orderBy = { price: 'asc' };
+        break;
+      case 'price-desc':
+        orderBy = { price: 'desc' };
+        break;
+      case 'name':
+        orderBy = { name: 'asc' };
+        break;
+      case 'featured':
+        orderBy = [{ featured: 'desc' }, { createdAt: 'desc' }];
+        break;
+      case 'newest':
+      default:
+        orderBy = { createdAt: 'desc' };
+        break;
+    }
+
+    // Obtener total de productos (para calcular páginas)
+    const total = await prisma.product.count({ where });
+
+    // Obtener productos con paginación
     const products = await prisma.product.findMany({
-      where: {
-        ...(categoryId && { categoryId }),
-        ...(active !== null && { active: active === 'true' }),
-        ...(featured !== null && { featured: featured === 'true' }),
-      },
+      where,
       include: {
         category: true,
       },
-      orderBy: {
-        createdAt: 'desc',
-      },
+      orderBy,
+      skip,
+      take: limit,
     });
 
-    return NextResponse.json(products);
+    // Calcular metadatos de paginación
+    const totalPages = Math.ceil(total / limit);
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+
+    return NextResponse.json({
+      products,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNextPage,
+        hasPrevPage,
+      },
+    });
   } catch (error) {
     return NextResponse.json(
       { error: 'Error al obtener productos' },

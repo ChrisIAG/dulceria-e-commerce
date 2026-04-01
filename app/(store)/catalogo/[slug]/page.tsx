@@ -5,6 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { formatPrice } from '@/lib/utils';
 import AddToCartButton from '@/components/store/add-to-cart-button';
+import ProductReviews from '@/components/store/product-reviews';
+import ReviewForm from '@/components/store/review-form';
+import {
+  generateProductMetadata,
+  generateProductJsonLd,
+  generateBreadcrumbJsonLd,
+} from '@/lib/seo';
 
 // Revalidar cada 60 segundos (ISR)
 export const revalidate = 60;
@@ -33,10 +40,53 @@ export async function generateStaticParams() {
   }
 }
 
+export async function generateMetadata({ params }: ProductPageProps) {
+  try {
+    const product: any = await prisma.product.findUnique({
+      where: { slug: params.slug },
+      include: {
+        category: true,
+        reviews: {
+          where: { approved: true },
+          include: { user: { select: { name: true } } },
+        },
+      } as any,
+    });
+
+    if (!product || !product.active) {
+      return {
+        title: 'Producto no encontrado',
+        description: 'El producto que buscas no está disponible.',
+      };
+    }
+
+    // Convert Decimal to number
+    const productForSeo = {
+      ...product,
+      price: Number(product.price),
+      wholesalePrice: product.wholesalePrice ? Number(product.wholesalePrice) : null,
+    };
+
+    return generateProductMetadata(productForSeo, product.reviews);
+  } catch (error) {
+    console.error('❌ Error generating metadata:', error);
+    return {
+      title: 'Dulcería Online',
+      description: 'Dulces típicos mexicanos al mejor precio.',
+    };
+  }
+}
+
 export default async function ProductPage({ params }: ProductPageProps) {
-  const product = await prisma.product.findUnique({
+  const product: any = await prisma.product.findUnique({
     where: { slug: params.slug },
-    include: { category: true },
+    include: {
+      category: true,
+      reviews: {
+        where: { approved: true },
+        include: { user: { select: { name: true } } },
+      },
+    } as any,
   });
 
   if (!product || !product.active) {
@@ -51,8 +101,38 @@ export default async function ProductPage({ params }: ProductPageProps) {
     minWholesale: product.minWholesale || 12,
   };
 
+  // Generate JSON-LD structured data
+  const productJsonLd = generateProductJsonLd(productForClient, product.reviews);
+  const breadcrumbJsonLd = generateBreadcrumbJsonLd([
+    { name: 'Inicio', url: process.env.NEXTAUTH_URL || 'https://dulceria-online.com' },
+    { name: 'Catálogo', url: `${process.env.NEXTAUTH_URL || 'https://dulceria-online.com'}/catalogo` },
+    ...(product.category
+      ? [
+          {
+            name: product.category.name,
+            url: `${process.env.NEXTAUTH_URL || 'https://dulceria-online.com'}/categoria/${product.category.slug}`,
+          },
+        ]
+      : []),
+    {
+      name: product.name,
+      url: `${process.env.NEXTAUTH_URL || 'https://dulceria-online.com'}/catalogo/${product.slug}`,
+    },
+  ]);
+
   return (
-    <div className="container mx-auto px-4 py-8">
+    <>
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+
+      <div className="container mx-auto px-4 py-8">
       <div className="grid gap-8 md:grid-cols-2">
         {/* Images */}
         <div className="space-y-4">
@@ -67,7 +147,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
           {product.images.length > 1 && (
             <div className="grid grid-cols-4 gap-2">
-              {product.images.slice(1, 5).map((image, index) => (
+              {product.images.slice(1, 5).map((image: string, index: number) => (
                 <div key={index} className="relative aspect-square overflow-hidden rounded-lg">
                   <Image src={image} alt={`${product.name} ${index + 2}`} fill className="object-cover" />
                 </div>
@@ -127,6 +207,25 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <AddToCartButton product={productForClient} />
         </div>
       </div>
+
+      {/* Reviews Section */}
+      <div className="mt-12 space-y-8">
+        <hr />
+        
+        {/* Review Form */}
+        <ReviewForm
+          productId={product.id}
+          productName={product.name}
+          onReviewSubmitted={() => {
+            // Revalidar la página para mostrar la nueva reseña una vez aprobada
+            // Por ahora no hacemos nada, el usuario verá un mensaje de éxito
+          }}
+        />
+
+        {/* Reviews List */}
+        <ProductReviews productId={product.id} />
+      </div>
     </div>
+    </>
   );
 }

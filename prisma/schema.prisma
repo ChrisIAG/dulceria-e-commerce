@@ -25,10 +25,12 @@ model User {
   createdAt  DateTime   @default(now())
 
   // Relaciones
-  orders   Order[]
-  accounts Account[]
-  sessions Session[]
-  carts    Cart[]
+  orders    Order[]
+  accounts  Account[]
+  sessions  Session[]
+  carts     Cart[]
+  reviews   Review[]
+  wishlists Wishlist[]
 
   @@map("users")
 }
@@ -107,8 +109,61 @@ model Product {
   promotions Promotion[]
   orderItems OrderItem[]
   cartItems  CartItem[]
+  reviews    Review[]
+  wishlists  Wishlist[]
 
   @@map("products")
+}
+
+// ============================================
+// RESEÑAS
+// ============================================
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int      // 1-5
+  comment   String?
+  approved  Boolean  @default(false)
+  productId String
+  userId    String
+  createdAt DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, userId])
+  @@map("reviews")
+}
+
+model Wishlist {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@map("wishlists")
+}
+
+model Coupon {
+  id            String       @id @default(cuid())
+  code          String       @unique
+  discountType  DiscountType
+  discountValue Float
+  maxUses       Int?         // null = ilimitado
+  usedCount     Int          @default(0)
+  minPurchase   Float?       // compra mínima requerida
+  startDate     DateTime
+  endDate       DateTime
+  active        Boolean      @default(true)
+  createdAt     DateTime     @default(now())
+
+  orders Order[]
+
+  @@map("coupons")
 }
 
 // ============================================
@@ -178,10 +233,12 @@ model Order {
   stripeId   String?
   address    Json?
   notes      String?
+  couponId   String?
   createdAt  DateTime    @default(now())
 
-  user  User?       @relation(fields: [userId], references: [id])
-  items OrderItem[]
+  user   User?       @relation(fields: [userId], references: [id])
+  coupon Coupon?     @relation(fields: [couponId], references: [id])
+  items  OrderItem[]
 
   @@map("orders")
 }
@@ -228,5 +285,10 @@ enum PromoType {
   FIXED
   TWO_FOR_ONE
   BUNDLE
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
 }
 

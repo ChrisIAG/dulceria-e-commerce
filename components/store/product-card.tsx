@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { ShoppingCart } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 import { useCartStore } from '@/store/cart';
+import WishlistButton from './wishlist-button';
 
 interface ProductCardProps {
   product: {
@@ -85,6 +86,11 @@ export function ProductCard({ product, promotion }: ProductCardProps) {
               Agotado
             </Badge>
           )}
+        </div>
+
+        {/* Wishlist button en esquina superior derecha */}
+        <div className="absolute top-2 right-2 z-10">
+          <WishlistButton productId={product.id} />
         </div>
 
         {/* Imagen con lazy load */}
