@@ -144,10 +144,12 @@ export default function ReportesPage() {
 
       {/* Métricas principales */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Ventas de {getPeriodLabel()}</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-gray-600">Ventas de {getPeriodLabel()}</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center">
+              <DollarSign className="h-5 w-5 text-emerald-600" />
+            </div>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -157,35 +159,37 @@ export default function ReportesPage() {
               </>
             ) : (
               <>
-                <div className="text-2xl font-bold">
+                <div className="text-3xl font-bold text-gray-900">
                   {formatPrice(salesData?.current.total || 0)}
                 </div>
-                <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
                   {salesData && salesData.growth.salesPercentage >= 0 ? (
-                    <TrendingUp className="h-3 w-3 text-green-600" />
+                    <TrendingUp className="h-3 w-3 text-emerald-600" />
                   ) : (
                     <TrendingDown className="h-3 w-3 text-red-600" />
                   )}
                   <span
                     className={
                       salesData && salesData.growth.salesPercentage >= 0
-                        ? 'text-green-600'
-                        : 'text-red-600'
+                        ? 'text-emerald-600 font-medium'
+                        : 'text-red-600 font-medium'
                     }
                   >
                     {salesData?.growth.salesPercentage.toFixed(1)}%
                   </span>
-                  vs período anterior
+                  <span className="text-gray-500">vs período anterior</span>
                 </p>
               </>
             )}
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pedidos</CardTitle>
-            <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-gray-600">Pedidos</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+              <ShoppingCart className="h-5 w-5 text-blue-600" />
+            </div>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -195,33 +199,35 @@ export default function ReportesPage() {
               </>
             ) : (
               <>
-                <div className="text-2xl font-bold">{salesData?.current.count || 0}</div>
-                <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                <div className="text-3xl font-bold text-gray-900">{salesData?.current.count || 0}</div>
+                <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
                   {salesData && salesData.growth.ordersPercentage >= 0 ? (
-                    <TrendingUp className="h-3 w-3 text-green-600" />
+                    <TrendingUp className="h-3 w-3 text-emerald-600" />
                   ) : (
                     <TrendingDown className="h-3 w-3 text-red-600" />
                   )}
                   <span
                     className={
                       salesData && salesData.growth.ordersPercentage >= 0
-                        ? 'text-green-600'
-                        : 'text-red-600'
+                        ? 'text-emerald-600 font-medium'
+                        : 'text-red-600 font-medium'
                     }
                   >
                     {salesData?.growth.ordersPercentage.toFixed(1)}%
                   </span>
-                  vs período anterior
+                  <span className="text-gray-500">vs período anterior</span>
                 </p>
               </>
             )}
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Ticket Promedio</CardTitle>
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-gray-600">Ticket Promedio</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-violet-100 flex items-center justify-center">
+              <BarChart3 className="h-5 w-5 text-violet-600" />
+            </div>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -231,34 +237,36 @@ export default function ReportesPage() {
               </>
             ) : (
               <>
-                <div className="text-2xl font-bold">
+                <div className="text-3xl font-bold text-gray-900">
                   {formatPrice(salesData?.current.averageTicket || 0)}
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">Por pedido</p>
+                <p className="text-xs text-gray-500 mt-1">Por pedido</p>
               </>
             )}
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Productos Activos</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-gray-600">Productos Activos</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center">
+              <Package className="h-5 w-5 text-amber-600" />
+            </div>
           </CardHeader>
           <CardContent>
             {loading ? (
               <>
-                <Skeleton className="h-8 w-20 mb-2" />
+                <Skeleton className="h-10 w-24 mb-2" />
                 <Skeleton className="h-4 w-32" />
               </>
             ) : (
               <>
-                <div className="text-2xl font-bold">
+                <div className="text-3xl font-bold text-gray-900">
                   {productsData?.summary.totalActive || 0}
                 </div>
-                <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
-                  <AlertTriangle className="h-3 w-3 text-yellow-600" />
-                  {productsData?.summary.outOfStock || 0} agotados
+                <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+                  <AlertTriangle className="h-3 w-3 text-amber-600" />
+                  <span className="font-medium">{productsData?.summary.outOfStock || 0}</span> agotados
                 </p>
               </>
             )}
@@ -268,7 +276,7 @@ export default function ReportesPage() {
 
       {/* Gráfica de ventas */}
       {loading ? (
-        <Card>
+        <Card className="bg-white border-gray-200 shadow-sm">
           <CardHeader>
             <Skeleton className="h-6 w-48" />
           </CardHeader>
@@ -287,7 +295,7 @@ export default function ReportesPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         {loading ? (
           <>
-            <Card>
+            <Card className="bg-white border-gray-200 shadow-sm">
               <CardHeader>
                 <Skeleton className="h-6 w-48" />
               </CardHeader>
@@ -295,7 +303,7 @@ export default function ReportesPage() {
                 <Skeleton className="h-64 w-full" />
               </CardContent>
             </Card>
-            <Card>
+            <Card className="bg-white border-gray-200 shadow-sm">
               <CardHeader>
                 <Skeleton className="h-6 w-48" />
               </CardHeader>

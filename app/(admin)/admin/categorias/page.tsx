@@ -33,9 +33,9 @@ export default async function CategoriasPage() {
         </Link>
       </div>
 
-      <Card>
+      <Card className="bg-white border-gray-200 shadow-sm">
         <CardHeader>
-          <CardTitle>Todas las Categorías ({categories.length})</CardTitle>
+          <CardTitle className="text-gray-900">Todas las Categorías ({categories.length})</CardTitle>
         </CardHeader>
         <CardContent>
           {categories.length === 0 ? (
@@ -54,7 +54,7 @@ export default async function CategoriasPage() {
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {categories.map((category) => (
-                <Card key={category.id} className="overflow-hidden hover:shadow-md transition-shadow">
+                <Card key={category.id} className="bg-white border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
                   {category.image && (
                     <div className="relative h-32 w-full bg-muted">
                       <Image

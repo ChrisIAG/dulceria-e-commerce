@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { auth } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+import type { Coupon } from '@prisma/client';
 import { redirect } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,23 +24,44 @@ export const metadata: Metadata = {
   description: 'Gestiona los cupones de descuento de la tienda',
 };
 
+export const dynamic = 'force-dynamic';
+
 async function getCoupons(status?: string) {
-  const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
-  const url = new URL(`${baseUrl}/api/admin/coupons`);
-  if (status) {
-    url.searchParams.set('status', status);
+  const now = new Date();
+  
+  let whereClause: any = {};
+  
+  if (status === 'activos') {
+    whereClause = {
+      active: true,
+      startDate: { lte: now },
+      endDate: { gte: now },
+    };
+  } else if (status === 'expirados') {
+    whereClause = {
+      OR: [
+        { active: false },
+        { endDate: { lt: now } },
+      ],
+    };
   }
 
-  const response = await fetch(url.toString(), {
-    cache: 'no-store',
+  const coupons = await prisma.coupon.findMany({
+    where: whereClause,
+    orderBy: { createdAt: 'desc' },
+    include: {
+      _count: {
+        select: { orders: true },
+      },
+    },
   });
 
-  if (!response.ok) {
-    throw new Error('Error al obtener cupones');
-  }
-
-  const data = await response.json();
-  return data.coupons;
+  // Convertir Decimals a numbers
+  return coupons.map((coupon: Coupon & { _count: { orders: number } }) => ({
+    ...coupon,
+    discountValue: Number(coupon.discountValue),
+    minPurchase: coupon.minPurchase ? Number(coupon.minPurchase) : null,
+  }));
 }
 
 export default async function CuponesAdminPage({
@@ -81,26 +104,35 @@ export default async function CuponesAdminPage({
 
       {/* Estadísticas */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white border rounded-lg p-4">
-          <div className="flex items-center gap-2 text-green-600 mb-2">
-            <Tag className="h-5 w-5" />
-            <span className="text-sm font-medium">Cupones Activos</span>
+        <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-medium text-gray-600">Cupones Activos</span>
+            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+              <Tag className="h-5 w-5 text-blue-600" />
+            </div>
           </div>
           <p className="text-3xl font-bold text-gray-900">{activeCoupons}</p>
+          <p className="text-xs text-gray-500 mt-1">Disponibles para uso</p>
         </div>
-        <div className="bg-white border rounded-lg p-4">
-          <div className="flex items-center gap-2 text-gray-600 mb-2">
-            <Tag className="h-5 w-5" />
-            <span className="text-sm font-medium">Cupones Expirados</span>
+        <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-medium text-gray-600">Cupones Expirados</span>
+            <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center">
+              <Tag className="h-5 w-5 text-amber-600" />
+            </div>
           </div>
           <p className="text-3xl font-bold text-gray-900">{expiredCoupons}</p>
+          <p className="text-xs text-gray-500 mt-1">Fuera de vigencia</p>
         </div>
-        <div className="bg-white border rounded-lg p-4">
-          <div className="flex items-center gap-2 text-purple-600 mb-2">
-            <Tag className="h-5 w-5" />
-            <span className="text-sm font-medium">Usos Totales</span>
+        <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-medium text-gray-600">Usos Totales</span>
+            <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center">
+              <Tag className="h-5 w-5 text-emerald-600" />
+            </div>
           </div>
           <p className="text-3xl font-bold text-gray-900">{totalUses}</p>
+          <p className="text-xs text-gray-500 mt-1">En todos los cupones</p>
         </div>
       </div>
 
@@ -184,15 +216,15 @@ export default async function CuponesAdminPage({
                     </TableCell>
                     <TableCell>
                       {!coupon.active ? (
-                        <Badge variant="secondary">Inactivo</Badge>
+                        <Badge variant="secondary" className="bg-gray-100 text-gray-700">Inactivo</Badge>
                       ) : isExpired ? (
-                        <Badge variant="destructive">Expirado</Badge>
+                        <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-200 border-amber-300">Expirado</Badge>
                       ) : isMaxedOut ? (
-                        <Badge variant="secondary">Límite Alcanzado</Badge>
+                        <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300">Límite Alcanzado</Badge>
                       ) : isActive ? (
-                        <Badge className="bg-green-600">Activo</Badge>
+                        <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border-emerald-300">Activo</Badge>
                       ) : (
-                        <Badge variant="outline">Programado</Badge>
+                        <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200 border-blue-300">Programado</Badge>
                       )}
                     </TableCell>
                     <TableCell className="text-right">

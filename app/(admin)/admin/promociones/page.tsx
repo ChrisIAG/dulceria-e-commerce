@@ -46,44 +46,50 @@ export default async function PromocionesAdminPage() {
 
       {/* Estadísticas */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card>
+        <Card className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-gray-600">Total</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-violet-100 flex items-center justify-center">
+              <Package className="h-5 w-5 text-violet-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{promotions.length}</div>
-            <p className="text-xs text-muted-foreground">promociones creadas</p>
+            <div className="text-3xl font-bold text-gray-900">{promotions.length}</div>
+            <p className="text-xs text-gray-500 mt-1">Promociones creadas</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Activas</CardTitle>
-            <TrendingUp className="h-4 w-4 text-green-600" />
+            <CardTitle className="text-sm font-medium text-gray-600">Activas</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center">
+              <TrendingUp className="h-5 w-5 text-emerald-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{activePromotions.length}</div>
-            <p className="text-xs text-muted-foreground">promociones activas</p>
+            <div className="text-3xl font-bold text-gray-900">{activePromotions.length}</div>
+            <p className="text-xs text-gray-500 mt-1">Promociones activas</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Próximas</CardTitle>
-            <Calendar className="h-4 w-4 text-blue-600" />
+            <CardTitle className="text-sm font-medium text-gray-600">Próximas</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+              <Calendar className="h-5 w-5 text-blue-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{upcomingPromotions.length}</div>
-            <p className="text-xs text-muted-foreground">por comenzar</p>
+            <div className="text-3xl font-bold text-gray-900">{upcomingPromotions.length}</div>
+            <p className="text-xs text-gray-500 mt-1">Por comenzar</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Lista de promociones */}
-      <Card>
+      <Card className="bg-white border-gray-200 shadow-sm">
         <CardHeader>
-          <CardTitle>Todas las Promociones</CardTitle>
+          <CardTitle className="text-gray-900">Todas las Promociones</CardTitle>
         </CardHeader>
         <CardContent>
           {promotions.length === 0 ? (

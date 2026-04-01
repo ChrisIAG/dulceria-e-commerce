@@ -1,0 +1,44 @@
+/* Forzar modo claro en todo el panel admin */
+/* Esto sobrescribe las variables CSS de dark mode para asegurar que el admin siempre se vea claro */
+
+/* Reset de variables dark mode - aplicar solo dentro del contexto admin */
+.admin-panel {
+  /* Sobrescribir variables para forzar modo claro */
+  --background: 0 0% 100%;
+  --foreground: 0 0% 7%; /* rgb(17 24 39) - gray-900 */
+  --card: 0 0% 100%; /* blanco puro */
+  --card-foreground: 0 0% 7%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 7%;
+  --muted: 210 40% 96.1%; /* gray-100 */
+  --muted-foreground: 0 0% 37%; /* rgb(107 114 128) - gray-500 */
+  --border: 214.3 31.8% 91.4%; /* gray-200 */
+  --input: 214.3 31.8% 91.4%;
+}
+
+/* Asegurar que el fondo general sea claro */
+.admin-panel {
+  background-color: rgb(249 250 251) !important; /* bg-gray-50 */
+  color: rgb(17 24 39) !important; /* text-gray-900 */
+}
+
+/* Forzar todas las cards a tener fondo blanco */
+.admin-panel [class*="rounded-lg"][class*="border"],
+.admin-panel .card,
+.admin-panel [data-radix-popper-content-wrapper] {
+  background-color: white !important;
+  border-color: rgb(229 231 235) !important; /* border-gray-200 */
+}
+
+/* Asegurar texto oscuro en contenido de cards */
+.admin-panel [class*="CardContent"],
+.admin-panel [class*="CardHeader"] {
+  background-color: white !important;
+  color: rgb(17 24 39) !important;
+}
+
+/* Texto muted convertido a gray-500 */
+.admin-panel .text-muted-foreground {
+  color: rgb(107 114 128) !important; /* text-gray-500 */
+}
+

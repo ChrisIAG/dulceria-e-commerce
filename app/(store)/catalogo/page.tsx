@@ -73,7 +73,14 @@ export default function CatalogoPage() {
   useEffect(() => {
     fetch('/api/categories')
       .then((res) => res.json())
-      .then((data) => setCategories(data))
+      .then((data) => {
+        const categoriesArray = data.categories || [];
+        if (Array.isArray(categoriesArray)) {
+          setCategories(categoriesArray);
+        } else {
+          setCategories([]);
+        }
+      })
       .catch((err) => console.error('Error loading categories:', err));
   }, []);
 

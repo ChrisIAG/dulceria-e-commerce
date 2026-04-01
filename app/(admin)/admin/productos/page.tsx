@@ -30,9 +30,9 @@ export default async function ProductosPage() {
         </Link>
       </div>
 
-      <Card>
+      <Card className="bg-white border-gray-200 shadow-sm">
         <CardHeader>
-          <CardTitle>Todos los Productos ({products.length})</CardTitle>
+          <CardTitle className="text-gray-900">Todos los Productos ({products.length})</CardTitle>
         </CardHeader>
         <CardContent>
           {products.length === 0 ? (

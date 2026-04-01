@@ -33,63 +33,75 @@ export default async function AdminDashboard() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-3xl font-bold">Dashboard</h2>
-        <p className="text-muted-foreground">Vista general de tu negocio</p>
+        <h2 className="text-3xl font-bold text-gray-900">Dashboard</h2>
+        <p className="text-gray-600">Vista general de tu negocio</p>
       </div>
 
       {/* Métricas */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Total de Ventas</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-gray-600">Total de Ventas</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center">
+              <DollarSign className="h-5 w-5 text-emerald-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-3xl font-bold text-gray-900">
               {formatPrice(Number(totalRevenue._sum.total || 0))}
             </div>
+            <p className="text-xs text-gray-500 mt-1">Pedidos pagados</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Pedidos</CardTitle>
-            <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-gray-600">Pedidos</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+              <ShoppingCart className="h-5 w-5 text-blue-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{ordersCount}</div>
+            <div className="text-3xl font-bold text-gray-900">{ordersCount}</div>
+            <p className="text-xs text-gray-500 mt-1">Órdenes totales</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Productos</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-gray-600">Productos</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-violet-100 flex items-center justify-center">
+              <Package className="h-5 w-5 text-violet-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{productsCount}</div>
+            <div className="text-3xl font-bold text-gray-900">{productsCount}</div>
+            <p className="text-xs text-gray-500 mt-1">En catálogo</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Clientes</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-gray-600">Clientes</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center">
+              <Users className="h-5 w-5 text-amber-600" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{customers}</div>
+            <div className="text-3xl font-bold text-gray-900">{customers}</div>
+            <p className="text-xs text-gray-500 mt-1">Registrados</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Órdenes recientes */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Pedidos Recientes</CardTitle>
+      <Card className="bg-white border-gray-200 shadow-sm">
+        <CardHeader className="bg-white">
+          <CardTitle className="text-gray-900">Pedidos Recientes</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="bg-white">
           {recentOrders.length === 0 ? (
-            <p className="text-center text-muted-foreground py-8">
+            <p className="text-center text-gray-500 py-8">
               No hay pedidos todavía
             </p>
           ) : (
@@ -97,17 +109,17 @@ export default async function AdminDashboard() {
               {recentOrders.map((order) => (
                 <div
                   key={order.id}
-                  className="flex items-center justify-between border-b pb-4 last:border-0"
+                  className="flex items-center justify-between border-b border-gray-200 pb-4 last:border-0"
                 >
                   <div>
-                    <p className="font-medium">{order.folio}</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="font-medium text-gray-900">{order.folio}</p>
+                    <p className="text-sm text-gray-500">
                       {order.items.length} productos
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-medium">{formatPrice(Number(order.total))}</p>
-                    <p className="text-sm text-muted-foreground">{order.status}</p>
+                    <p className="font-medium text-gray-900">{formatPrice(Number(order.total))}</p>
+                    <p className="text-sm text-gray-500">{order.status}</p>
                   </div>
                 </div>
               ))}

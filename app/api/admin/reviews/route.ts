@@ -32,7 +32,6 @@ export async function GET(request: NextRequest) {
             id: true,
             name: true,
             email: true,
-            image: true,
           },
         },
         product: {

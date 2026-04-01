@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Search, ArrowLeft } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
-import { AddToCartButton } from '@/components/store/add-to-cart-button';
+import AddToCartButton from '@/components/store/add-to-cart-button';
 
 interface Product {
   id: string;
@@ -176,12 +176,11 @@ export default function BuscarPage() {
                     name: product.name,
                     slug: product.slug,
                     price: product.priceRetail,
-                    wholesalePrice: product.priceWholesale,
+                    wholesalePrice: product.priceWholesale ?? product.priceRetail,
                     minWholesale: product.wholesaleMinQty || 12,
                     stock: product.stock,
-                    image: product.images[0] || '/placeholder.png',
+                    images: product.images.length > 0 ? product.images : ['/placeholder.png'],
                   }}
-                  disabled={product.stock === 0}
                 />
               </div>
             </Card>
