@@ -6,20 +6,20 @@ Este documento detalla todas las funcionalidades pendientes de implementar en la
 
 ## � **ESTADO ACTUAL DEL PROYECTO**
 
-**Progreso General**: 15/20 features completadas (**75%**)
+**Progreso General**: 17/20 features completadas (**85%**)
 
 ### Sprints Completados:
 - ✅ **Sprint 1** - Fundamentos (Auth, Orders, Categories, Search): 100%
 - ✅ **Sprint 2** - UX Crítica (Filtros, Reports, Order Mgmt, Emails): 100%
 - ⏳ **Sprint 3** - Admin Features (Inventario pendiente): 90%
-- ⏳ **Sprint 4** - Features Avanzados (15/20 completado): 90%
+- ✅ **Sprint 4** - Features Avanzados (17/20 completado): 95%
 - ⏳ **Sprint 5** - Growth & Optimización (SEO, Analytics, i18n): 60%
 
-### Últimas Features Implementadas:
-1. ✅ **Feature #9** - Sistema de Reseñas (85%) - Reseñas con moderación admin
-2. ✅ **Feature #10** - Wishlist/Favoritos (90%) - Heart buttons + página dedicada
-3. ✅ **Feature #11** - Comparador de Precios (95%) - Calculadora interactiva + mayoreo
-4. ✅ **Feature #13** - Cupones de Descuento (90%) - Validación + panel admin completo
+### Últimas Features Implementadas (Abril 2026):
+1. ✅ **Feature #1** - Recuperación de Contraseña (100%) - Password reset completo
+2. ✅ **Feature #8** - Email de Confirmación de Pedido (100%) - Integrado en webhook
+3. ✅ **Feature #13** - Cupones en Checkout (95%) - Integración completa con Stripe
+4. ✅ **Feature #9** - Reviews en ProductCard (90%) - Rating promedio con estrellas
 5. ✅ **Feature #19** - Modo Oscuro (100%) - Dark mode completo con next-themes
 6. ✅ **Feature #16** - Paginación (100%) - Navegación completa con selector de items
 7. ✅ **Feature #17** - Optimizaciones SEO (100%) - Sitemap, metadata, Schema.org
@@ -42,7 +42,7 @@ Este documento detalla todas las funcionalidades pendientes de implementar en la
 **✅ Implementado**:
 - [x] Registro de nuevos usuarios con validación de email
 - [x] Login con email y contraseña (ya existía)
-- [ ] Recuperación de contraseña por email (pendiente)
+- [x] Recuperación de contraseña por email ✅ **COMPLETADO**
 - [x] Perfil de usuario editable (nombre, email, contraseña)
 - [x] Integración completa con NextAuth v5
 - [x] Protección de rutas privadas
@@ -54,8 +54,14 @@ Este documento detalla todas las funcionalidades pendientes de implementar en la
 - ✅ `app/api/auth/register/route.ts` - API de registro
 - ✅ `app/api/auth/update-profile/route.ts` - API actualización perfil
 - ✅ `components/ui/alert.tsx` - Componente Alert creado
+- ✅ `app/api/auth/forgot-password/route.ts` - Generación de token y envío de email
+- ✅ `app/api/auth/reset-password/route.ts` - Validación de token y cambio de contraseña
+- ✅ `app/forgot-password/page.tsx` - Formulario de solicitud de reset
+- ✅ `app/reset-password/page.tsx` - Formulario de nueva contraseña
+- ✅ `emails/password-reset.tsx` - Template de email con link de reset
+- ✅ `prisma/schema.prisma` - Campos passwordResetToken y passwordResetExpires añadidos a User
 
-**Estado**: ✅ Completado (90%) - Falta recuperación de contraseña
+**Estado**: ✅ Completado (100%)
 
 ---
 
@@ -283,7 +289,7 @@ npm install recharts @types/recharts # ✅ Instalado
 
 ### 8. ✅ Notificaciones por Email
 
-**Estado**: ✅ COMPLETADO (80%) - Sistema de emails transaccionales implementado con Resend + React Email
+**Estado**: ✅ COMPLETADO (90%) - Sistema de emails transaccionales implementado con Resend + React Email
 
 **Implementado**:
 - ✅ Email de bienvenida al registrarse (enviado automáticamente)
@@ -304,6 +310,7 @@ npm install recharts @types/recharts # ✅ Instalado
 - ✅ `app/api/auth/register/route.ts` - Envía email de bienvenida después del registro
 - ✅ `app/api/admin/orders/[id]/status/route.ts` - Envía email al cambiar estado, incluye tracking si existe
 - ✅ `app/api/admin/orders/[id]/tracking/route.ts` - Envía email específico al agregar tracking
+- ✅ `app/api/stripe/webhook/route.ts` - Envía email de confirmación después de crear orden (checkout.session.completed)
 
 **Dependencias instaladas**:
 ```bash
@@ -330,9 +337,11 @@ NEXTAUTH_URL=http://localhost:3000  # Para links en emails
 - Formato de precios en MXN
 - Imágenes de productos en email de confirmación
 
-**Pendiente** (20%):
-- Email de confirmación de pedido al realizar compra (requiere integración con webhook de Stripe)
-- Email de recuperación de contraseña (requiere flujo de reset password)
+**Actualizaciones recientes**:
+- ✅ Email de confirmación de pedido implementado en webhook de Stripe
+- ✅ Email de recuperación de contraseña con flujo completo
+
+**Pendiente** (10%):
 - Notificación al admin de nuevo pedido
 - Email de carrito abandonado (requiere tracking de carritos)
 - Email de facturación (si aplica)
@@ -343,7 +352,7 @@ NEXTAUTH_URL=http://localhost:3000  # Para links en emails
 
 ### 9. ✅ Sistema de Reseñas y Calificaciones
 
-**Estado**: ✅ COMPLETADO (85%) - Sistema completo de reseñas con moderación
+**Estado**: ✅ COMPLETADO (90%) - Sistema completo de reseñas con moderación y display en catálogo
 
 **Implementado**:
 - ✅ Modelo `Review` en Prisma (rating 1-5, comment, userId, productId, approved)
@@ -358,9 +367,9 @@ NEXTAUTH_URL=http://localhost:3000  # Para links en emails
 - ✅ Filtrado en admin por estado (pendientes/aprobadas/todas)
 - ✅ Edición de reseña por el autor (rating y comment)
 - ✅ Eliminación permitida para autor y admin
+- ✅ Display de estrellas promedio en ProductCard del catálogo ✅ **COMPLETADO**
 - [ ] Reportar reseña inapropiada (pendiente)
 - [ ] Respuesta del vendedor a reseñas (pendiente)
-- [ ] Display de estrellas promedio en ProductCard del catálogo (pendiente)
 
 **Archivos creados**:
 - ✅ `prisma/schema.prisma` - Modelo Review con relaciones y unique constraint
@@ -374,6 +383,8 @@ NEXTAUTH_URL=http://localhost:3000  # Para links en emails
 
 **Archivos modificados**:
 - ✅ `app/(store)/catalogo/[slug]/page.tsx` - Añadidas secciones de ReviewForm y ProductReviews
+- ✅ `components/store/product-card.tsx` - Display de rating promedio con estrellas
+- ✅ `app/api/products/route.ts` - Incluye reviews aprobadas y calcula avgRating/reviewCount
 
 **Validaciones implementadas**:
 - Usuario debe estar autenticado para crear reseña
@@ -609,7 +620,7 @@ model InventoryLog {
 
 ---
 
-### 13. Cupones de Descuento ✅ COMPLETADO (90%)
+### 13. Cupones de Descuento ✅ COMPLETADO (95%)
 
 **Implementado**:
 - ✅ Modelo `Coupon` en Prisma con relación a Order
@@ -711,28 +722,38 @@ npx prisma generate
 npx prisma migrate dev --name add_coupons
 ```
 
-**Cómo integrar en checkout** (ver SETUP_COUPONS.md):
+**Cómo integrar en checkout** ✅ **YA INTEGRADO**:
+
+**Archivos modificados para integración**:
+- ✅ `app/(store)/checkout/page.tsx` - CouponInput integrado con estado appliedCoupon, cálculo de descuento
+- ✅ `app/api/stripe/create-session/route.ts` - Crea cupón en Stripe y lo aplica al session con discounts array
+- ✅ `app/api/stripe/webhook/route.ts` - Guarda couponId y discount en orden, incrementa usedCount
+
 ```typescript
+// Implementación en checkout/page.tsx
 import { CouponInput } from '@/components/store/coupon-input';
 
-// En componente de carrito/checkout
+const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+const discount = appliedCoupon ? calculateDiscount(appliedCoupon, subtotal) : 0;
+const total = subtotal - discount;
+
 <CouponInput
-  subtotal={subtotalAmount}
-  onCouponApplied={(coupon) => {
-    // Guardar cupón aplicado
-    // Recalcular total con descuento
-  }}
-  onCouponRemoved={() => {
-    // Limpiar cupón
-    // Recalcular total sin descuento
-  }}
-  appliedCoupon={currentCoupon}
+  subtotal={subtotal}
+  onCouponApplied={setAppliedCoupon}
+  onCouponRemoved={() => setAppliedCoupon(null)}
+  appliedCoupon={appliedCoupon}
 />
+
+// Enviar couponId, couponCode y discountAmount al API
 ```
 
-**Pendiente (10%)**:
-- [ ] Integrar CouponInput en página de carrito/checkout real
-- [ ] Implementar incremento de usedCount al confirmar orden
+**Actualizaciones recientes**:
+- ✅ CouponInput integrado en página de checkout con descuento dinámico
+- ✅ Incremento de usedCount implementado en webhook de Stripe
+- ✅ Creación de cupón en Stripe con descuento aplicado a checkout session
+- ✅ CouponId y discountAmount guardados en metadata y orden
+
+**Pendiente (5%)**:
 - [ ] Usar transacciones Prisma para aplicar cupón atómicamente
 - [ ] Cupones con restricciones avanzadas (por categoría/producto)
 - [ ] Generación de códigos únicos por usuario
