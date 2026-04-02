@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Plus, Package, Edit, Trash2 } from 'lucide-react';
 import { DeleteCategoryButton } from './delete-category-button';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
 
 export default async function CategoriasPage() {
   const categories = await prisma.category.findMany({

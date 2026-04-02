@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, Star } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 import { useCartStore } from '@/store/cart';
 import WishlistButton from './wishlist-button';
@@ -23,6 +23,8 @@ interface ProductCardProps {
     stock: number;
     active: boolean;
     featured: boolean;
+    avgRating?: number | null;
+    reviewCount?: number;
   };
   promotion?: {
     id: string;
@@ -114,9 +116,20 @@ export function ProductCard({ product, promotion }: ProductCardProps) {
         </div>
 
         <CardContent className="p-4 flex-1 flex flex-col">
-          <h3 className="font-semibold text-lg line-clamp-2 mb-2 group-hover:text-primary transition-colors">
+          <h3 className="font-semibold text-lg line-clamp-2 mb-1 group-hover:text-primary transition-colors">
             {product.name}
           </h3>
+
+          {/* Rating */}
+          {product.avgRating != null && product.avgRating > 0 && (
+            <div className="flex items-center gap-1 mb-2">
+              <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+              <span className="text-sm font-medium">{product.avgRating.toFixed(1)}</span>
+              {product.reviewCount != null && product.reviewCount > 0 && (
+                <span className="text-xs text-muted-foreground">({product.reviewCount})</span>
+              )}
+            </div>
+          )}
 
           <div className="mt-auto space-y-2">
             {/* Precio menudeo */}

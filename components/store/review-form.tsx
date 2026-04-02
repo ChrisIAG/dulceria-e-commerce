@@ -13,13 +13,11 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 interface ReviewFormProps {
   productId: string;
   productName: string;
-  onReviewSubmitted?: () => void;
 }
 
 export default function ReviewForm({
   productId,
   productName,
-  onReviewSubmitted,
 }: ReviewFormProps) {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -61,12 +59,6 @@ export default function ReviewForm({
       setSuccess(true);
       setRating(0);
       setComment('');
-
-      if (onReviewSubmitted) {
-        setTimeout(() => {
-          onReviewSubmitted();
-        }, 2000);
-      }
     } catch (err: any) {
       setError(err.message || 'Error al enviar reseña');
     } finally {

@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Package, ShoppingCart, DollarSign, Users } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
 
 export default async function AdminDashboard() {
   // Obtener métricas

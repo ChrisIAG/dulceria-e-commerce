@@ -7,7 +7,7 @@ import { formatPrice } from '@/lib/utils';
 import { Plus } from 'lucide-react';
 import { ProductActions } from './product-actions';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
 
 export default async function ProductosPage() {
   const products = await prisma.product.findMany({

@@ -9,12 +9,20 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatPrice, calculatePrice } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
 import { useHydration } from '@/hooks/use-hydration';
+import { CouponInput } from '@/components/store/coupon-input';
 
 export default function CheckoutPage() {
   const hydrated = useHydration();
   const router = useRouter();
   const { items, getSubtotal, clearCart } = useCartStore();
   const [loading, setLoading] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    id: string;
+    code: string;
+    discountType: 'PERCENTAGE' | 'FIXED';
+    discountValue: number;
+    discountAmount: number;
+  } | null>(null);
   const [formData, setFormData] = useState({
     customerName: '',
     customerEmail: '',
@@ -26,6 +34,8 @@ export default function CheckoutPage() {
   });
 
   const subtotal = getSubtotal();
+  const discount = appliedCoupon?.discountAmount || 0;
+  const total = subtotal - discount;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,6 +62,9 @@ export default function CheckoutPage() {
             zipCode: formData.zipCode,
             country: 'MX',
           },
+          couponId: appliedCoupon?.id || null,
+          couponCode: appliedCoupon?.code || null,
+          discountAmount: discount,
         }),
       });
 
@@ -250,16 +263,29 @@ export default function CheckoutPage() {
                   <span className="text-muted-foreground">Subtotal</span>
                   <span>{formatPrice(subtotal)}</span>
                 </div>
+                {discount > 0 && (
+                  <div className="flex justify-between text-green-600">
+                    <span>Descuento</span>
+                    <span>-{formatPrice(discount)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Envío</span>
                   <span>Calculado en pago</span>
                 </div>
               </div>
 
+              <CouponInput
+                subtotal={subtotal}
+                onCouponApplied={(coupon) => setAppliedCoupon(coupon)}
+                onCouponRemoved={() => setAppliedCoupon(null)}
+                appliedCoupon={appliedCoupon}
+              />
+
               <div className="border-t pt-4">
                 <div className="flex justify-between text-lg font-bold">
                   <span>Total</span>
-                  <span>{formatPrice(subtotal)}</span>
+                  <span>{formatPrice(total)}</span>
                 </div>
               </div>
             </CardContent>

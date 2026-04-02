@@ -5,7 +5,7 @@ import { ArrowLeft } from 'lucide-react';
 import { CategoryForm } from '@/components/admin/category-form';
 import { prisma } from '@/lib/prisma';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
 
 export default async function EditarCategoriaPage({
   params,

@@ -10,10 +10,19 @@
   --card-foreground: 0 0% 7%;
   --popover: 0 0% 100%;
   --popover-foreground: 0 0% 7%;
+  --primary: 346 77% 50%; /* Rosa vibrante #E91E63 */
+  --primary-foreground: 0 0% 100%; /* Blanco */
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 0 0% 7%;
   --muted: 210 40% 96.1%; /* gray-100 */
   --muted-foreground: 0 0% 37%; /* rgb(107 114 128) - gray-500 */
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 0 0% 7%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
   --border: 214.3 31.8% 91.4%; /* gray-200 */
   --input: 214.3 31.8% 91.4%;
+  --ring: 346 77% 50%;
 }
 
 /* Asegurar que el fondo general sea claro */
@@ -22,8 +31,8 @@
   color: rgb(17 24 39) !important; /* text-gray-900 */
 }
 
-/* Forzar todas las cards a tener fondo blanco */
-.admin-panel [class*="rounded-lg"][class*="border"],
+/* Forzar cards a fondo blanco — excluir botones */
+.admin-panel [class*="rounded-lg"][class*="border"]:not(button):not(a):not([role="button"]),
 .admin-panel .card,
 .admin-panel [data-radix-popper-content-wrapper] {
   background-color: white !important;

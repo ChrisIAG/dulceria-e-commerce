@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { stripe, validateStripeConfig } from '@/lib/stripe';
 import { prisma } from '@/lib/prisma';
+import { sendEmail } from '@/lib/email';
+import OrderConfirmationEmail from '@/emails/order-confirmation';
 import Stripe from 'stripe';
 
 export async function POST(request: Request) {
@@ -46,11 +48,22 @@ export async function POST(request: Request) {
     const session = event.data.object as Stripe.Checkout.Session;
 
     try {
+      // Idempotencia: verificar si ya existe un pedido con este stripeId
+      const existingOrder = await prisma.order.findFirst({
+        where: { stripeId: session.id },
+      });
+      if (existingOrder) {
+        console.log('Order already exists for session:', session.id);
+        return NextResponse.json({ received: true });
+      }
+
       // Extraer metadata
       const customerName = session.metadata?.customerName || '';
       const customerPhone = session.metadata?.customerPhone || '';
       const shippingAddress = JSON.parse(session.metadata?.shippingAddress || '{}');
       const items = JSON.parse(session.metadata?.items || '[]');
+      const couponId = session.metadata?.couponId || null;
+      const discountAmount = parseFloat(session.metadata?.discountAmount || '0');
 
       // Obtener productos
       const productIds = items.map((item: any) => item.productId);
@@ -89,12 +102,22 @@ export async function POST(request: Request) {
           address: JSON.stringify(shippingAddress),
           notes: `Cliente: ${customerName}, Tel: ${customerPhone}, Email: ${session.customer_email}`,
           subtotal,
-          total: subtotal,
+          discount: discountAmount,
+          total: subtotal - discountAmount,
+          couponId: couponId || undefined,
           items: {
             create: orderItems as any,
           },
         },
       });
+
+      // Incrementar uso del cupón si se usó
+      if (couponId) {
+        await prisma.coupon.update({
+          where: { id: couponId },
+          data: { usedCount: { increment: 1 } },
+        });
+      }
 
       // Descontar stock
       for (const item of items) {
@@ -109,6 +132,41 @@ export async function POST(request: Request) {
       }
 
       console.log('Order created:', order.folio);
+
+      // Enviar email de confirmación de pedido
+      if (session.customer_email) {
+        const emailItems = orderItems.map((item: any) => {
+          const product = products.find((p) => p.id === item.productId);
+          return {
+            product: product ? { name: product.name, images: product.images } : null,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+            total: item.total,
+          };
+        });
+
+        const parsedAddress = shippingAddress.street ? {
+          street: shippingAddress.street || '',
+          city: shippingAddress.city || '',
+          state: shippingAddress.state || '',
+          zipCode: shippingAddress.zipCode || '',
+          country: shippingAddress.country || 'México',
+        } : undefined;
+
+        sendEmail({
+          to: session.customer_email,
+          subject: `Confirmación de pedido ${order.folio}`,
+          react: OrderConfirmationEmail({
+            customerName,
+            folio: order.folio,
+            items: emailItems,
+            subtotal,
+            discount: discountAmount,
+            total: subtotal - discountAmount,
+            address: parsedAddress,
+          }),
+        }).catch((err) => console.error('Error sending order confirmation email:', err));
+      }
     } catch (error) {
       console.error('Error processing checkout.session.completed:', error);
       return NextResponse.json(

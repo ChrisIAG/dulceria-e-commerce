@@ -98,10 +98,26 @@ export async function GET(request: Request) {
       where,
       include: {
         category: true,
+        reviews: {
+          where: { approved: true },
+          select: { rating: true },
+        },
       },
       orderBy,
       skip,
       take: limit,
+    });
+
+    // Add review stats to each product
+    const productsWithReviews = products.map((product) => {
+      const approvedReviews = product.reviews;
+      const reviewCount = approvedReviews.length;
+      const avgRating =
+        reviewCount > 0
+          ? approvedReviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount
+          : null;
+      const { reviews, ...rest } = product;
+      return { ...rest, avgRating, reviewCount };
     });
 
     // Calcular metadatos de paginación
@@ -110,7 +126,7 @@ export async function GET(request: Request) {
     const hasPrevPage = page > 1;
 
     return NextResponse.json({
-      products,
+      products: productsWithReviews,
       pagination: {
         page,
         limit,

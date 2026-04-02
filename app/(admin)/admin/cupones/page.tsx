@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   description: 'Gestiona los cupones de descuento de la tienda',
 };
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
 
 async function getCoupons(status?: string) {
   const now = new Date();

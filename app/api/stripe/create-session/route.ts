@@ -21,6 +21,9 @@ const checkoutSchema = z.object({
     zipCode: z.string().min(5),
     country: z.string().default('MX'),
   }),
+  couponId: z.string().nullable().optional(),
+  couponCode: z.string().nullable().optional(),
+  discountAmount: z.number().min(0).optional().default(0),
 });
 
 export async function POST(request: Request) {
@@ -88,6 +91,18 @@ export async function POST(request: Request) {
 
     console.log('[Stripe Session] Line items created:', lineItems.length);
 
+    // Create Stripe coupon if discount applied
+    let discounts: { coupon: string }[] = [];
+    if (validated.discountAmount && validated.discountAmount > 0) {
+      const stripeCoupon = await stripe.coupons.create({
+        amount_off: Math.round(validated.discountAmount * 100),
+        currency: 'mxn',
+        duration: 'once',
+        name: `Cupón ${validated.couponCode || 'descuento'}`,
+      });
+      discounts = [{ coupon: stripeCoupon.id }];
+    }
+
     // Verificar APP_URL
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     console.log('[Stripe Session] Using APP_URL:', appUrl);
@@ -98,6 +113,7 @@ export async function POST(request: Request) {
       payment_method_types: ['card', 'oxxo'],
       line_items: lineItems,
       mode: 'payment',
+      ...(discounts.length > 0 && { discounts }),
       success_url: `${appUrl}/confirmacion?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${appUrl}/carrito`,
       customer_email: validated.customerEmail,
@@ -106,6 +122,8 @@ export async function POST(request: Request) {
         customerPhone: validated.customerPhone,
         shippingAddress: JSON.stringify(validated.shippingAddress),
         items: JSON.stringify(validated.items),
+        couponId: validated.couponId || '',
+        discountAmount: String(validated.discountAmount || 0),
       },
     });
 

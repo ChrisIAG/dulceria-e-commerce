@@ -216,10 +216,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <ReviewForm
           productId={product.id}
           productName={product.name}
-          onReviewSubmitted={() => {
-            // Revalidar la página para mostrar la nueva reseña una vez aprobada
-            // Por ahora no hacemos nada, el usuario verá un mensaje de éxito
-          }}
         />
 
         {/* Reviews List */}

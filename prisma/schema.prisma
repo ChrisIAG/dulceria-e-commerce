@@ -16,13 +16,15 @@ datasource db {
 // ============================================
 
 model User {
-  id         String     @id @default(cuid())
-  email      String     @unique
-  name       String?
-  password   String?
-  role       Role       @default(CUSTOMER)
-  clientType ClientType @default(RETAIL)
-  createdAt  DateTime   @default(now())
+  id                   String     @id @default(cuid())
+  email                String     @unique
+  name                 String?
+  password             String?
+  role                 Role       @default(CUSTOMER)
+  clientType           ClientType @default(RETAIL)
+  passwordResetToken   String?    @unique
+  passwordResetExpires DateTime?
+  createdAt            DateTime   @default(now())
 
   // Relaciones
   orders    Order[]
