@@ -27,12 +27,13 @@ model User {
   createdAt            DateTime   @default(now())
 
   // Relaciones
-  orders    Order[]
-  accounts  Account[]
-  sessions  Session[]
-  carts     Cart[]
-  reviews   Review[]
-  wishlists Wishlist[]
+  orders        Order[]
+  accounts      Account[]
+  sessions      Session[]
+  carts         Cart[]
+  reviews       Review[]
+  wishlists     Wishlist[]
+  inventoryLogs InventoryLog[]
 
   @@map("users")
 }
@@ -107,12 +108,13 @@ model Product {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  category   Category?    @relation(fields: [categoryId], references: [id])
-  promotions Promotion[]
-  orderItems OrderItem[]
-  cartItems  CartItem[]
-  reviews    Review[]
-  wishlists  Wishlist[]
+  category      Category?      @relation(fields: [categoryId], references: [id])
+  promotions    Promotion[]
+  orderItems    OrderItem[]
+  cartItems     CartItem[]
+  reviews       Review[]
+  wishlists     Wishlist[]
+  inventoryLogs InventoryLog[]
 
   @@map("products")
 }
@@ -148,6 +150,23 @@ model Wishlist {
 
   @@unique([userId, productId])
   @@map("wishlists")
+}
+
+model InventoryLog {
+  id        String           @id @default(cuid())
+  productId String
+  type      InventoryLogType
+  quantity  Int              // positivo para entradas, negativo para salidas
+  note      String?
+  userId    String?
+  createdAt DateTime         @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user    User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([productId])
+  @@index([createdAt])
+  @@map("inventory_logs")
 }
 
 model Coupon {
@@ -292,5 +311,12 @@ enum PromoType {
 enum DiscountType {
   PERCENTAGE
   FIXED
+}
+
+enum InventoryLogType {
+  SALE
+  PURCHASE
+  ADJUSTMENT
+  RETURN
 }
 
