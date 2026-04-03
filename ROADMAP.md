@@ -6,14 +6,14 @@ Este documento detalla todas las funcionalidades pendientes de implementar en la
 
 ## � **ESTADO ACTUAL DEL PROYECTO**
 
-**Progreso General**: 17/20 features completadas (**85%**)
+**Progreso General**: 18/20 features completadas (**90%**)
 
 ### Sprints Completados:
 - ✅ **Sprint 1** - Fundamentos (Auth, Orders, Categories, Search): 100%
 - ✅ **Sprint 2** - UX Crítica (Filtros, Reports, Order Mgmt, Emails): 100%
 - ⏳ **Sprint 3** - Admin Features (Inventario pendiente): 90%
-- ✅ **Sprint 4** - Features Avanzados (17/20 completado): 95%
-- ⏳ **Sprint 5** - Growth & Optimización (SEO, Analytics, i18n): 60%
+- ✅ **Sprint 4** - Features Avanzados (18/20 completado): 95%
+- ✅ **Sprint 5** - Growth & Optimización (SEO, Analytics completados): 80%
 
 ### Últimas Features Implementadas (Abril 2026):
 1. ✅ **Feature #1** - Recuperación de Contraseña (100%) - Password reset completo
@@ -23,11 +23,11 @@ Este documento detalla todas las funcionalidades pendientes de implementar en la
 5. ✅ **Feature #19** - Modo Oscuro (100%) - Dark mode completo con next-themes
 6. ✅ **Feature #16** - Paginación (100%) - Navegación completa con selector de items
 7. ✅ **Feature #17** - Optimizaciones SEO (100%) - Sitemap, metadata, Schema.org
+8. ✅ **Feature #18** - Analytics y Tracking (100%) - GA4, Facebook Pixel, Clarity con 12 eventos ✨ **NUEVO**
 
 ### Próximas Prioridades:
 - 📋 Feature #12: Gestión de Inventario Avanzada
 - 📋 Feature #14: Mejoras en Checkout (Google Places, envío)
-- 📋 Feature #18: Analytics y Tracking
 - 📋 Feature #20: Multi-idioma (i18n)
 - 📋 Feature #15: Integración con Paqueterías
 
@@ -1030,37 +1030,66 @@ https://cards-dev.twitter.com/validator
 
 ---
 
-### 18. Analytics y Tracking
+### 18. Analytics y Tracking ✅ COMPLETADO (100%)
 
-**Implementar**:
-- ✅ Google Analytics 4 (GA4)
-- ✅ Vercel Analytics (si deployado en Vercel)
-- ✅ Facebook Pixel para remarketing
-- ✅ Eventos personalizados:
+**✅ Implementado**:
+- ✅ Google Analytics 4 (GA4) con eventos de e-commerce completos
+- ✅ Facebook Pixel para remarketing (opcional)
+- ✅ Microsoft Clarity para heatmaps y grabaciones de sesión (opcional)
+- ✅ Tracking automático de page views en cada navegación
+- ✅ Eventos personalizados completos:
+  - `page_view` - Vista de página (automático)
   - `view_item` - Ver producto
   - `add_to_cart` - Agregar al carrito
+  - `remove_from_cart` - Quitar del carrito
+  - `view_cart` - Ver carrito
   - `begin_checkout` - Iniciar checkout
+  - `apply_coupon` - Aplicar cupón
   - `purchase` - Compra completada
-- ✅ Heatmaps con Hotjar o Microsoft Clarity
+  - `search` - Búsqueda de productos
+  - `add_to_wishlist` - Agregar a favoritos
+  - `sign_up` - Registro de usuario
+  - `login` - Inicio de sesión
 
-**Dependencias**:
-```bash
-npm install @vercel/analytics
-npm install react-ga4
-```
+**Archivos creados**:
+1. `lib/analytics.ts` - Librería completa de tracking con helpers type-safe
+2. `components/analytics-scripts.tsx` - Componentes GoogleAnalytics, FacebookPixel, MicrosoftClarity
+3. `components/store/product-view-tracker.tsx` - Tracker invisible para view_item
+4. `components/analytics/purchase-tracker.tsx` - Tracker de purchase en confirmación
+5. `app/api/orders/session/route.ts` - API para obtener datos del pedido desde session_id
+6. `ANALYTICS_SETUP.md` - Guía completa de configuración paso a paso
+
+**Archivos modificados**:
+1. `app/layout.tsx` - Scripts de analytics inyectados
+2. `app/(store)/catalogo/[slug]/page.tsx` - Tracking de view_item
+3. `components/store/add-to-cart-button.tsx` - Tracking de add_to_cart
+4. `app/(store)/checkout/page.tsx` - Tracking de begin_checkout
+5. `app/(store)/confirmacion/page.tsx` - PurchaseTracker component
+6. `components/store/search-bar.tsx` - Tracking de search
+7. `components/store/wishlist-button.tsx` - Tracking de add_to_wishlist
+8. `app/login/page.tsx` - Tracking de login
+9. `app/(store)/registro/page.tsx` - Tracking de sign_up y login
+10. `.env.example` - Variables de entorno documentadas
 
 **Variables de entorno**:
 ```env
-NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
-NEXT_PUBLIC_FB_PIXEL_ID=12345678
+# Obligatorio para GA4
+NEXT_PUBLIC_GA_MEASUREMENT_ID="G-XXXXXXXXXX"
+
+# Opcional para remarketing
+NEXT_PUBLIC_FB_PIXEL_ID="1234567890123456"
+
+# Opcional para heatmaps (GRATIS)
+NEXT_PUBLIC_CLARITY_ID="abcd1234efgh5678"
 ```
 
-**Archivos a crear**:
-- `lib/analytics.ts` - Helpers para tracking
-- `components/analytics-scripts.tsx` - Scripts de terceros
-
-**Archivos a modificar**:
-- `app/layout.tsx` - Inyectar scripts
+**Notas de implementación**:
+- Sistema completo de e-commerce analytics siguiendo spec de GA4
+- Type-safe con TypeScript en todos los eventos
+- Tracking solo si las variables de entorno están configuradas
+- Console logs en desarrollo para debugging
+- Purchase tracking obtiene datos del pedido dinámicamente desde DB
+- Documentación completa en ANALYTICS_SETUP.md
 
 ---
 

@@ -7,6 +7,7 @@ import { formatPrice } from '@/lib/utils';
 import AddToCartButton from '@/components/store/add-to-cart-button';
 import ProductReviews from '@/components/store/product-reviews';
 import ReviewForm from '@/components/store/review-form';
+import { ProductViewTracker } from '@/components/store/product-view-tracker';
 import {
   generateProductMetadata,
   generateProductJsonLd,
@@ -122,6 +123,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <>
+     {/* Analytics Tracking */}
+      <ProductViewTracker
+        product={{
+          id: product.id,
+          name: product.name,
+          category: product.category?.name,
+          price: Number(product.price),
+        }}
+      />
+
       {/* JSON-LD Structured Data */}
       <script
         type="application/ld+json"

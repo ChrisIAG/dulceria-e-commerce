@@ -64,6 +64,7 @@ export async function POST(request: Request) {
       const items = JSON.parse(session.metadata?.items || '[]');
       const couponId = session.metadata?.couponId || null;
       const discountAmount = parseFloat(session.metadata?.discountAmount || '0');
+      const userId = session.metadata?.userId || null;
 
       // Obtener productos
       const productIds = items.map((item: any) => item.productId);
@@ -99,6 +100,7 @@ export async function POST(request: Request) {
           clientType: 'RETAIL',
           status: 'PAID',
           stripeId: session.id,
+          userId: userId ? userId : undefined,
           address: JSON.stringify(shippingAddress),
           notes: `Cliente: ${customerName}, Tel: ${customerPhone}, Email: ${session.customer_email}`,
           subtotal,

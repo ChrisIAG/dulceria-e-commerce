@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle, Loader2, CheckCircle } from 'lucide-react';
+import { signUp as trackSignUp, login as trackLogin } from '@/lib/analytics';
 
 export default function RegistroPage() {
   const router = useRouter();
@@ -67,6 +68,9 @@ export default function RegistroPage() {
 
       // Registro exitoso
       setSuccess(true);
+      
+      // Track sign up event
+      trackSignUp('email');
 
       // Iniciar sesión automáticamente
       const signInResult = await signIn('credentials', {
@@ -81,6 +85,9 @@ export default function RegistroPage() {
           router.push('/login');
         }, 2000);
       } else {
+        // Track login event
+        trackLogin('credentials');
+        
         setTimeout(() => {
           router.push('/mi-cuenta');
         }, 1500);

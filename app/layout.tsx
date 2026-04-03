@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { Providers } from '@/components/providers';
+import { GoogleAnalytics, FacebookPixel, MicrosoftClarity } from '@/components/analytics-scripts';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -19,6 +20,9 @@ export default function RootLayout({
   return (
     <html lang="es-MX" className={cn("font-sans", inter.variable)}>
       <body className={cn(inter.className, 'antialiased')}>
+        <GoogleAnalytics />
+        <FacebookPixel />
+        <MicrosoftClarity />
         <Providers>{children}</Providers>
       </body>
     </html>

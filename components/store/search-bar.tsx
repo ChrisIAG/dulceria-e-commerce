@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { formatPrice } from '@/lib/utils';
 import { cn } from '@/lib/utils';
+import { search as trackSearch } from '@/lib/analytics';
 
 interface Suggestion {
   id: string;
@@ -65,6 +66,9 @@ export function SearchBar() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
+      // Track search event
+      trackSearch(query.trim());
+      
       router.push(`/buscar?q=${encodeURIComponent(query.trim())}`);
       setShowSuggestions(false);
     }

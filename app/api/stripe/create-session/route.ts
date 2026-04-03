@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { stripe, validateStripeConfig } from '@/lib/stripe';
 import { prisma } from '@/lib/prisma';
+import { auth } from '@/lib/auth';
 import { z } from 'zod';
 import { calculatePrice } from '@/lib/utils';
 
@@ -29,6 +30,10 @@ const checkoutSchema = z.object({
 export async function POST(request: Request) {
   try {
     console.log('[Stripe Session] Starting checkout...');
+    
+    // Get authenticated user info if available
+    const authSession = await auth();
+    const userId = authSession?.user?.id || '';
     
     // Validate Stripe configuration
     validateStripeConfig();
@@ -124,6 +129,7 @@ export async function POST(request: Request) {
         items: JSON.stringify(validated.items),
         couponId: validated.couponId || '',
         discountAmount: String(validated.discountAmount || 0),
+        userId: userId,
       },
     });
 

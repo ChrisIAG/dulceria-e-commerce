@@ -6,17 +6,25 @@ import { useRouter } from 'next/navigation';
 import { Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { addToWishlist as trackAddToWishlist } from '@/lib/analytics';
 
 interface WishlistButtonProps {
   productId: string;
   variant?: 'default' | 'icon';
   className?: string;
+  // Datos opcionales del producto para analytics
+  productName?: string;
+  productPrice?: number;
+  productCategory?: string;
 }
 
 export default function WishlistButton({
   productId,
   variant = 'icon',
   className,
+  productName,
+  productPrice,
+  productCategory,
 }: WishlistButtonProps) {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -84,6 +92,16 @@ export default function WishlistButton({
 
         if (response.ok) {
           setIsInWishlist(true);
+          
+          // Track add to wishlist event (solo si tenemos los datos del producto)
+          if (productName && productPrice !== undefined) {
+            trackAddToWishlist({
+              id: productId,
+              name: productName,
+              category: productCategory,
+              price: productPrice,
+            });
+          }
         } else {
           const data = await response.json();
           throw new Error(data.error || 'Error al agregar a favoritos');

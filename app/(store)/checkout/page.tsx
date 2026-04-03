@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCartStore } from '@/store/cart';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,7 @@ import { formatPrice, calculatePrice } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
 import { useHydration } from '@/hooks/use-hydration';
 import { CouponInput } from '@/components/store/coupon-input';
+import { beginCheckout } from '@/lib/analytics';
 
 export default function CheckoutPage() {
   const hydrated = useHydration();
@@ -36,6 +37,21 @@ export default function CheckoutPage() {
   const subtotal = getSubtotal();
   const discount = appliedCoupon?.discountAmount || 0;
   const total = subtotal - discount;
+
+  // Track begin_checkout event when user submits the form
+  useEffect(() => {
+    if (hydrated && items.length > 0) {
+      beginCheckout(
+        items.map((item) => ({
+          item_id: item.productId,
+          item_name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+        })),
+        total
+      );
+    }
+  }, [hydrated, items, total]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

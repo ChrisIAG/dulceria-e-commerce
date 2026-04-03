@@ -2,10 +2,17 @@ import { CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Suspense } from 'react';
+import { PurchaseTracker } from '@/components/analytics/purchase-tracker';
 
 export default function ConfirmacionPage() {
   return (
     <div className="container mx-auto px-4 py-16">
+      {/* Analytics: Rastrear evento de purchase */}
+      <Suspense fallback={null}>
+        <PurchaseTracker />
+      </Suspense>
+      
       <Card className="mx-auto max-w-2xl">
         <CardContent className="p-12 text-center">
           <CheckCircle className="mx-auto h-20 w-20 text-green-600 mb-6" />

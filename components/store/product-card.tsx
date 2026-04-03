@@ -92,7 +92,11 @@ export function ProductCard({ product, promotion }: ProductCardProps) {
 
         {/* Wishlist button en esquina superior derecha */}
         <div className="absolute top-2 right-2 z-10">
-          <WishlistButton productId={product.id} />
+          <WishlistButton 
+            productId={product.id}
+            productName={product.name}
+            productPrice={Number(product.price)}
+          />
         </div>
 
         {/* Imagen con lazy load */}

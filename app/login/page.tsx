@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
+import { login as trackLogin } from '@/lib/analytics';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -30,6 +31,9 @@ export default function LoginPage() {
       if (result?.error) {
         setError('Credenciales inválidas');
       } else {
+        // Track login event
+        trackLogin('credentials');
+        
         // Redirigir al admin o a la página principal
         router.push('/admin');
         router.refresh();

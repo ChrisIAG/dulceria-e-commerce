@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useCartStore } from '@/store/cart';
 import { ShoppingCart, Plus, Minus } from 'lucide-react';
+import { addToCart as trackAddToCart } from '@/lib/analytics';
 
 interface Product {
   id: string;
@@ -26,6 +27,14 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
   const addItem = useCartStore((state) => state.addItem);
 
   const handleAddToCart = () => {
+    // Track add_to_cart event in Google Analytics
+    trackAddToCart({
+      id: product.id,
+      name: product.name,
+      price: Number(product.price),
+      quantity: quantity,
+    });
+
     for (let i = 0; i < quantity; i++) {
       addItem({
         id: product.id,
